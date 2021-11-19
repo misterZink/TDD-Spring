@@ -1,4 +1,4 @@
-package com.example.tddspring.Model;
+package com.example.tddspring.model;
 
 import lombok.Value;
 
@@ -6,4 +6,5 @@ import lombok.Value;
 public class User {
     String username;
     String password;
+    String salt;
 }
