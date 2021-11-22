@@ -1,11 +1,13 @@
 package com.example.tddspring;
 
-import com.example.tddspring.model.User;
-import com.example.tddspring.service.LoginService;
+import com.example.tddspring.exceptions.WrongUserCredentialsException;
+import com.example.tddspring.models.User;
+import com.example.tddspring.services.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.example.tddspring.util.PasswordUtils.verifyPassword;
+import static com.example.tddspring.utils.PasswordUtils.verifyPassword;
+import static com.example.tddspring.utils.JwtUtil.*;
 
 @RestController
 public class LoginController {
@@ -13,11 +15,11 @@ public class LoginController {
     @Autowired
     LoginService loginService;
 
-    public boolean loginUser(String username, String password) {
+    public String loginUser(String username, String password) throws WrongUserCredentialsException {
         User user = loginService.getUsers().get(username);
-        if (user != null) {
-            return verifyPassword(password, user.getPassword(), user.getSalt());
+        if (user == null || !verifyPassword(password, user.getPassword(), user.getSalt())) {
+            throw new WrongUserCredentialsException("login failed");
         }
-        return false;
+        return createUserToken(user.getUsername());
     }
 }
