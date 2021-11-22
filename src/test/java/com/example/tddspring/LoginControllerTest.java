@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static com.example.tddspring.utils.JwtUtil.verifyUserToken;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -24,6 +25,7 @@ public class LoginControllerTest {
 
     @BeforeEach
     void setUp() {
+
         loginService.addUser("anna", "losen");
         loginService.addUser("berit", "123456");
         loginService.addUser("kalle", "password");
@@ -35,12 +37,20 @@ public class LoginControllerTest {
 
         assertDoesNotThrow(() -> loginController.loginUser(username, password));
         String token = loginController.loginUser(username, password);
-        assertNotEquals("",token);
+        assertNotEquals("", token);
     }
 
     @Test
     void test_login_fail_with_exception() {
+
         WrongUserCredentialsException thrown = assertThrows(WrongUserCredentialsException.class, () -> loginController.loginUser("wrong", "password"));
         assertEquals("login failed", thrown.getMessage());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"anna,losen", "berit,123456", "kalle,password"})
+    void test_verify_user_token_success(String username, String password) throws WrongUserCredentialsException {
+
+        assertTrue(verifyUserToken(loginController.loginUser(username, password), username));
     }
 }
