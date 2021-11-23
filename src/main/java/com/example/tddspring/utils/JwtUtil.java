@@ -44,4 +44,13 @@ public class JwtUtil {
                 .get("user")
                 .equals(username);
     }
+
+    public static String getUsernameFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(DatatypeConverter.parseBase64Binary(SECRET_KEY))
+                .parseClaimsJws(token)
+                .getBody()
+                .get("user")
+                .toString();
+    }
 }

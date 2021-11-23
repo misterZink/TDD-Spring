@@ -69,11 +69,14 @@ public class LoginControllerTest {
 
     @ParameterizedTest
     @MethodSource("testData")
-    void test_user_rights_success(String username, String password, Resource resource, List<Permissions> permissions) {
+    void test_user_rights_success(String username, String password, Resource resource, List<Permissions> permissions) throws WrongUserCredentialsException {
+
+        assertDoesNotThrow(() -> loginController.loginUser(username, password));
+        String token = loginController.loginUser(username, password);
 
         loginService.addAuthorizationsToUser(username, resource, permissions);
 
-        assertNotNull(loginService.getUserPermissions(username, resource));
-        assertFalse(loginService.getUserPermissions(username, resource).isEmpty());
+        assertNotNull(loginService.getUserPermissions(token, resource));
+        assertFalse(loginService.getUserPermissions(token, resource).isEmpty());
     }
 }

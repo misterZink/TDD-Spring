@@ -4,10 +4,14 @@ import com.example.tddspring.enums.Permissions;
 import com.example.tddspring.enums.Resource;
 import com.example.tddspring.models.User;
 import com.example.tddspring.utils.PasswordUtils;
+import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.DatatypeConverter;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.example.tddspring.utils.JwtUtil.getUsernameFromToken;
 
 @Service
 public class LoginService {
@@ -28,9 +32,11 @@ public class LoginService {
         users.get(username).getAuthorizations().put(resource, permissions);
     }
 
-    public List<Permissions> getUserPermissions(String username, Resource resource) {
-        return users.get(username).getAuthorizations().get(resource);
+    public List<Permissions> getUserPermissions(String token, Resource resource) {
+        return users.get(getUsernameFromToken(token)).getAuthorizations().get(resource);
     }
+
+
 
     public HashMap<String, User> getUsers() {
         return users;
