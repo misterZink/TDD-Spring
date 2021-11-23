@@ -1,13 +1,17 @@
 package com.example.tddspring.services;
 
+import com.example.tddspring.enums.Permissions;
+import com.example.tddspring.enums.Resource;
 import com.example.tddspring.models.User;
 import com.example.tddspring.utils.PasswordUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class LoginService {
+
     HashMap<String, User> users = new HashMap<>();
 
     public void addUser(String username, String password) {
@@ -17,7 +21,15 @@ public class LoginService {
         String hashedPassword = PasswordUtils.hashPassword(password, salt).orElse(null);
         assert hashedPassword != null;
 
-        users.put(username,new User(username, hashedPassword, salt));
+        users.put(username, new User(username, hashedPassword, salt, new HashMap<>()));
+    }
+
+    public void addAuthorizationsToUser(String username, Resource resource, List<Permissions> permissions) {
+        users.get(username).getAuthorizations().put(resource, permissions);
+    }
+
+    public List<Permissions> getUserPermissions(String username, Resource resource) {
+        return users.get(username).getAuthorizations().get(resource);
     }
 
     public HashMap<String, User> getUsers() {
